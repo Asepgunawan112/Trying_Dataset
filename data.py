@@ -22,12 +22,9 @@ def masuk_file(filename):
     y = df['price']
     return X, y
 
-
 def latih_model(X, y):
-
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
     
-
     model = LinearRegression()
     model.fit(X_train, y_train)
     
@@ -39,29 +36,30 @@ def latih_model(X, y):
     rmse = np.sqrt(mean_squared_error(y_test, y_pred))
     return slope, intercept, rmse, X_test, y_test, y_pred
 
+
 def tampilkan_hasil_teks(slope, intercept, rmse, X_test, y_test, y_pred):
-    print("HASIL REGRESI LINEAR")
-    print(f"Persamaan: y = {slope:.2f}x + {intercept:.2f}")
-    print(f"RMSE     : {rmse:.4f}")
 
-    print("\n DATA LUAS")
-    for val in X_test['area'].values:
-        print(f"{val:.2f}")
+    print("HASIL REGRESI LINEAR (HOUSING DATASET)")
 
-    print("\n DATA HARGA PREDIKSI")
-    for val in y_pred:
-        print(f"{val:.2f}")
+    
+    print(f"Persamaan Tren: y = {slope:.2f}x + {intercept:.2f}")
+    print(f"Nilai RMSE    : {rmse:.4f}")
 
-    print("\n DATA HARGA AKTUAL")
-    for val in y_test.values:
-        print(f"{val:.2f}")
-    print("-" * 40)
+    print("Sampel 10 Data Prediksi vs Aktual:")
+    
+    areas = X_test['area'].values
+    actuals = y_test.values
+    preds = y_pred
+    jumlah_data = min(10, len(areas))
+
+    for i in range(jumlah_data):
+        print(f"Luas: {areas[i]:<7} | Aktual: {actuals[i]:<15} | Prediksi: {preds[i]:.2f}")
+    
 
 def tampilkan_grafik(X_test, y_test, y_pred):
     fig, ax = plt.subplots(figsize=(9, 5.5))
     ax.scatter(X_test, y_test, color='#2d5a8c', alpha=0.6, s=45, label='Data Aktual')
     ax.plot(X_test, y_pred, color='#c74440', linewidth=1.8, label='Garis Regresi')
-    
     ax.set_title('Hubungan Luas Tanah terhadap Harga Rumah')
     ax.set_xlabel('Luas Tanah')
     ax.set_ylabel('Harga Rumah')
@@ -70,6 +68,7 @@ def tampilkan_grafik(X_test, y_test, y_pred):
     
     plt.tight_layout()
     plt.show()
+
 if __name__ == "__main__":
     nama_file = 'data.csv'
 
