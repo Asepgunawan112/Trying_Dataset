@@ -6,71 +6,74 @@ from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error
 
 # 1. MEMUAT DATA
-# Masukin nama file CSV/Excel nya disini
-filename = 'data.csv'  # Ganti sesuai nama file data kamu
+filename = 'data.csv'  # Pastikan file ini ada
 try:
     df = pd.read_csv(filename)
 except FileNotFoundError:
-    print(f"File {filename} tidak ditemukan. Pastikan file ada di folder yang sama.")
-    exit()
+    print(f"File {filename} tidak ditemukan. Menggunakan data dummy untuk contoh.")
+    data = {
+        'area': [2600, 3000, 3200, 3600, 4000, 2500, 2700, 3100, 3300, 3700, 2800, 2900],
+        'price': [550000, 565000, 610000, 680000, 725000, 540000, 560000, 600000, 620000, 690000, 570000, 580000]
+    }
+    df = pd.DataFrame(data)
 
-# Menentukan Variabel Independen (X) dan Dependen (y)
 # X = Area (Luas Tanah), y = Price (Harga)
-X = df[['area']] 
+X = df[['area']]
 y = df['price']
 
-# 2. SPLIT DATA (80% Training, 20% Testing)
-# Sesuai standar soal UAS
+# 2. SPLIT DATA
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-
-# 3. MELATIH MODEL REGRESI
 model = LinearRegression()
 model.fit(X_train, y_train)
 
-# Mendapatkan Slope (m) dan Intercept (c)
 slope = model.coef_[0]
 intercept = model.intercept_
 
-# 4. MELAKUKAN PREDIKSI (Pada data testing)
+# 4. PREDIKSI
 y_pred = model.predict(X_test)
 
-# 5. MENGHITUNG RMSE
+# 5. RMSE
 rmse = np.sqrt(mean_squared_error(y_test, y_pred))
 
-# ==========================================
-# OUTPUT HASIL (Disesuaikan dengan formatmu)
-# ==========================================
+print("=" * 60)
+print("HASIL REGRESI LINEAR")
+print("=" * 60)
+print(f"Persamaan: y = {slope:.2f}x + {intercept:.2f}")
+print(f"RMSE     : {rmse:.4f}")
+print("-" * 60)
+
+
 
 print("=" * 40)
-print("HASIL REGRESI LINEAR (HOUSING DATASET)")
+print("HASIL REGRESI LINEAR")
 print("=" * 40)
 
-# Menampilkan Persamaan Tren
-print(f"Persamaan Tren: y = {slope:.2f}x + {intercept:.2f}")
-print(f"Nilai RMSE    : {rmse:.4f}")
-print("-" * 40)
 
-# Menampilkan 10 data perbandingan pertama (agar layar tidak penuh)
-print("Sampel 10 Data Prediksi vs Aktual:")
-# Menggabungkan data untuk tampilan
-hasil = pd.DataFrame({'Luas (Area)': X_test['area'].values, 
-                      'Harga Aktual': y_test.values, 
-                      'Harga Prediksi': y_pred})
+print("\n--- DATA LUAS (AREA) ---")
+for val in X_test['area'].values:
+    print(f"{val:.2f}")
 
-for index, row in hasil.head(10).iterrows():
-    print(f"Luas: {int(row['Luas (Area)']):<5} | "
-          f"Aktual: {int(row['Harga Aktual']):<10} | "
-          f"Prediksi: {row['Harga Prediksi']:.2f}")
+print("\n--- DATA HARGA PREDIKSI ---")
+for val in y_pred:
+    print(f"{val:.2f}")
+
+
+print("\n--- DATA HARGA AKTUAL ---")
+for val in y_test.values:
+    print(f"{val:.2f}")
 
 print("-" * 40)
 
-# (Opsional) Visualisasi Grafik seperti "hasil teman"
-plt.figure(figsize=(10, 6))
-plt.scatter(X_test, y_test, color='blue', label='Data Aktual (Test Set)')
-plt.plot(X_test, y_pred, color='red', linewidth=2, label='Garis Regresi')
-plt.title('Regresi Linear: Luas Tanah vs Harga Rumah')
-plt.xlabel('Luas Tanah (Area)')
-plt.ylabel('Harga (Price)')
-plt.legend()
-plt.grid(True)
+
+print("-" * 60)
+
+fig, ax = plt.subplots(figsize=(9, 5.5))
+ax.scatter(X_test, y_test, color='#2d5a8c', alpha=0.6, s=45, label='Data Aktual')
+ax.plot(X_test, y_pred, color='#c74440', linewidth=1.8, label='Garis Regresi')
+ax.set_title('Hubungan Luas Tanah terhadap Harga Rumah')
+ax.set_xlabel('Luas Tanah')
+ax.set_ylabel('Harga Rumah')
+ax.legend()
+ax.grid(True, alpha=0.25, linestyle='--')
+plt.tight_layout()
 plt.show()
